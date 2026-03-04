@@ -1,0 +1,12 @@
+/* ANSI BBS Theme - Green on Black */
+
+:root {
+  --color-background: #000000;
+  --color-primary: #00ff00;
+  --color-accent: #ffff00;
+  --color-hover: #1a1a1a;
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #ff5555;
+  --color-success: #ffff00;
+}

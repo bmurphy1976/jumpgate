@@ -1,0 +1,99 @@
+package views
+
+templ Layout(data AdminLayoutData) {
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>{ data.Title }</title>
+		<link rel="stylesheet" id="theme-stylesheet" href={ "/static/themes/" + data.Theme.Current + ".css?v=" + data.Theme.CacheHash }/>
+		<link rel="stylesheet" href={ "/css/admin.css?v=" + data.AdminCSSHash }/>
+		@templ.Raw("<script>window.THEME_HASHES=" + data.Theme.CacheHashesRaw + ";</script>")
+		<link rel="stylesheet" href={ data.Deps.MDIFontCSSURL }/>
+		<script src={ data.Deps.HtmxURL }></script>
+		<script src={ data.Deps.SortableJSURL }></script>
+	</head>
+	<body>
+		<!-- HEADER -->
+		<div class="header-container">
+			<div class="search-bar-container">
+				<input type="text" class="search-input" placeholder="" id="searchInput" autocomplete="off"/>
+				<span class="search-icon mdi mdi-magnify"></span>
+			</div>
+			<div class="header-main">
+				<a href="/"><h1>{ data.Title }</h1></a>
+				if data.Weather.Temp != "" {
+				<div class="weather-widget">
+					<div class="weather-icon">
+						<span class={ "mdi mdi-" + data.Weather.Icon }></span>
+					</div>
+					<div class="weather-details">
+						<span>{ data.Weather.Temp }</span>
+						<span>{ data.Weather.Humidity }</span>
+					</div>
+				</div>
+			}
+			</div>
+		</div>
+
+		{ children... }
+
+		<!-- FOOTER -->
+		<div class="footer">
+			<form method="POST" action="/set-theme">
+				<select id="theme-select" name="theme">
+					for _, t := range data.Theme.Available {
+						if t == data.Theme.Current {
+							<option value={ t } selected>{ t }</option>
+						} else {
+							<option value={ t }>{ t }</option>
+						}
+					}
+				</select>
+				<noscript><button type="submit">Apply</button></noscript>
+			</form>
+			if !data.DemoMode {
+				<span>|</span>
+				if data.IsAuthorized {
+					<a href="/logout">Logout</a>
+				} else {
+					<a href="/login">Login</a>
+				}
+			}
+			<span>|</span>
+			<a href="/">Dashboard</a>
+		</div>
+
+		<!-- CONFIRM DIALOG -->
+		<div class="confirm-overlay" id="confirmOverlay">
+			<div class="confirm-dialog" onclick="event.stopPropagation()">
+				<p id="confirmMessage">Delete this item?</p>
+				<div class="actions">
+					<button class="btn btn-sm" id="confirmDeleteBtn" style="color:var(--color-danger);border-color:var(--color-danger);">Delete</button>
+					<button class="btn btn-sm" onclick="hideConfirm()">Cancel</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- ICON PICKER -->
+		<div class="icon-picker-overlay" id="iconPickerOverlay" popover>
+			<div class="icon-picker" id="iconPicker">
+				<div class="icon-picker-search">
+					<input type="text" id="iconSearchInput" placeholder="Search icons..."
+						autocomplete="off" data-1p-ignore
+						hx-get="/admin/icons"
+						hx-trigger="input delay:300ms"
+						hx-target="#iconPickerGrid"
+						hx-swap="innerHTML"
+						name="q"/>
+				</div>
+				<div class="icon-picker-grid" id="iconPickerGrid"></div>
+			</div>
+		</div>
+
+		@templ.Raw("<script>" + data.ThemeJSRaw + "</script>")
+		<script src={ "/static/js/admin.js?v=" + data.AdminJSHash }></script>
+	</body>
+	</html>
+}

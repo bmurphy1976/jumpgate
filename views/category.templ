@@ -1,0 +1,80 @@
+package views
+
+import (
+	"dashboard/common"
+	"dashboard/model"
+	"fmt"
+)
+
+templ CategoryCard(cat model.Category, settings model.Settings) {
+	<div class="category-card" data-category-id={ fmt.Sprintf("%d", cat.ID) }>
+		<div class="category-header">
+			if cat.IsFavorites {
+				<span class="drag-handle-placeholder"></span>
+			} else {
+				<span class="drag-handle mdi mdi-drag" title="Drag to reorder"></span>
+			}
+			if cat.IsFavorites {
+				<input type="text" class="category-name-input" name="name" value={ cat.Name }
+					autocomplete="off" data-1p-ignore
+					hx-put={ fmt.Sprintf("/admin/categories/%d", cat.ID) }
+					hx-trigger="change" hx-swap="none"
+					hx-on::after-request="document.getElementById('favoritesHeadline').childNodes[0].textContent=this.value"/>
+			} else {
+				<input type="text" class="category-name-input" name="name" value={ cat.Name }
+					autocomplete="off" data-1p-ignore
+					hx-put={ fmt.Sprintf("/admin/categories/%d", cat.ID) }
+					hx-trigger="change" hx-swap="none"/>
+			}
+			<div class="category-actions">
+				<button class="btn-icon category-overflow-btn mdi mdi-dots-vertical"
+					title="More options"
+					popovertarget={ fmt.Sprintf("cat-%d-overflow", cat.ID) }></button>
+				<div class="category-overflow-menu"
+					id={ fmt.Sprintf("cat-%d-overflow", cat.ID) }
+					popover>
+					@CategoryEnabledToggle(fmt.Sprintf("/admin/categories/%d/toggle/enabled", cat.ID), cat.Enabled)
+					@HeaderToggle(fmt.Sprintf("cat-%d-private-toggle-mobile", cat.ID), fmt.Sprintf("/admin/categories/%d/toggle/private", cat.ID), cat.Private, settings.DefaultPrivate, false)
+					@BookmarkHeaderToggle("newtab", fmt.Sprintf("cat-%d-newtab-toggle-mobile", cat.ID), fmt.Sprintf("/admin/categories/%d/toggle/new-tab", cat.ID), cat.OpenInNewTab, settings.DefaultOpenInNewTab, false)
+				</div>
+				<span class="category-toggles-desktop">
+					@CategoryEnabledToggle(fmt.Sprintf("/admin/categories/%d/toggle/enabled", cat.ID), cat.Enabled)
+					@HeaderToggle(fmt.Sprintf("cat-%d-private-toggle", cat.ID), fmt.Sprintf("/admin/categories/%d/toggle/private", cat.ID), cat.Private, settings.DefaultPrivate, false)
+					@BookmarkHeaderToggle("newtab", fmt.Sprintf("cat-%d-newtab-toggle", cat.ID), fmt.Sprintf("/admin/categories/%d/toggle/new-tab", cat.ID), cat.OpenInNewTab, settings.DefaultOpenInNewTab, false)
+				</span>
+				<button class="btn-icon mdi mdi-sort-alphabetical-ascending" title="Sort A-Z"
+					hx-post={ fmt.Sprintf("/admin/categories/%d/sort", cat.ID) }
+					hx-target={ fmt.Sprintf("[data-category-id='%d']", cat.ID) }
+					hx-swap="outerHTML"></button>
+				<button class="btn-icon mdi mdi-bookmark-plus-outline" title="Add bookmark"
+					hx-post="/admin/bookmarks"
+					hx-vals={ fmt.Sprintf(`{"category_id": %d}`, cat.ID) }
+					hx-target={ fmt.Sprintf("#cat-%d-table", cat.ID) }
+					hx-swap="afterbegin"></button>
+				if !cat.IsFavorites {
+					<button class="btn-icon danger mdi mdi-trash-can-outline" title="Delete category"
+						data-confirm-msg={ fmt.Sprintf("Delete category %s and all bookmarks?", cat.Name) }
+						onclick="showConfirm(this.dataset.confirmMsg, this)"
+						hx-delete={ fmt.Sprintf("/admin/categories/%d", cat.ID) }
+						hx-target="closest .category-card"
+						hx-swap="outerHTML swap:200ms"
+						hx-trigger="confirmed"></button>
+				} else {
+					<span class="btn-icon-placeholder"></span>
+				}
+			</div>
+		</div>
+		<table class="bookmark-table" id={ fmt.Sprintf("cat-%d-table", cat.ID) }>
+			<colgroup>
+				<col class="col-drag"/>
+				<col class="col-icon"/>
+				<col/>
+				<col class="col-url"/>
+				<col class="col-actions"/>
+			</colgroup>
+			for _, bm := range cat.Bookmarks {
+				@BookmarkRow(bm, settings, common.ResolveNullBool(cat.Private, settings.DefaultPrivate), common.ResolveNullBool(cat.OpenInNewTab, settings.DefaultOpenInNewTab))
+			}
+		</table>
+	</div>
+}

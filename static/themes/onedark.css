@@ -1,0 +1,12 @@
+/* One Dark Theme */
+
+:root {
+  --color-background: #282c34;
+  --color-primary: #abb2bf;
+  --color-accent: #61afef;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #e06c75;
+  --color-success: #98c379;
+}

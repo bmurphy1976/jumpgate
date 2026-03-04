@@ -1,0 +1,92 @@
+package views
+
+import (
+	"dashboard/model"
+	"fmt"
+)
+
+templ AdminPage(settings model.Settings, categories []model.Category, layout AdminLayoutData) {
+	@Layout(layout) {
+		<div class="categories" id="categoriesContainer">
+			@SettingsCard(settings)
+
+			<section class="favorites-section">
+				<h2 class="section-headline" id="favoritesHeadline">Favorites</h2>
+				for _, cat := range categories {
+					if cat.IsFavorites {
+						@CategoryCard(cat, settings)
+					}
+				}
+			</section>
+
+			<section class="bookmarks-section">
+				<h2 class="section-headline">
+					Bookmarks
+					<button class="btn-icon mdi mdi-shape-square-rounded-plus" title="Add category"
+						hx-post="/admin/categories"
+						hx-target="#bookmarkCategories"
+						hx-swap="afterbegin"></button>
+				</h2>
+				<div id="bookmarkCategories" style="display:flex;flex-direction:column;gap:1rem;">
+					for _, cat := range categories {
+						if !cat.IsFavorites {
+							@CategoryCard(cat, settings)
+						}
+					}
+				</div>
+			</section>
+		</div>
+
+	}
+}
+
+templ SettingsCard(settings model.Settings) {
+	<div class="settings-card">
+		<div class="settings-header" tabindex="0" onclick="toggleSettings()"
+			onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSettings()}">
+			<span class="mdi mdi-chevron-right"></span>
+			<span class="settings-title">Settings</span>
+		</div>
+		<div class="settings-body" id="settingsBody">
+			<div class="settings-grid">
+				<div class="form-group full">
+					<label>Dashboard Title</label>
+					<input type="text" name="title" value={ settings.Title }
+						hx-put="/admin/settings" hx-trigger="change" hx-swap="none"
+						hx-on::after-request="document.querySelector('.header-main h1').textContent = this.value"/>
+				</div>
+				<div class="form-group">
+					<label>Default Latitude</label>
+					<input type="text" name="weather_latitude" value={ settings.WeatherLatitude }
+						hx-put="/admin/settings" hx-trigger="change" hx-swap="none"/>
+				</div>
+				<div class="form-group">
+					<label>Default Longitude</label>
+					<input type="text" name="weather_longitude" value={ settings.WeatherLongitude }
+						hx-put="/admin/settings" hx-trigger="change" hx-swap="none"/>
+				</div>
+				<div class="form-group">
+					<label>Temperature Unit</label>
+					<select name="weather_unit"
+						hx-put="/admin/settings" hx-trigger="change" hx-swap="none">
+						<option value="fahrenheit" selected?={ settings.WeatherUnit == "fahrenheit" }>Fahrenheit</option>
+						<option value="celsius" selected?={ settings.WeatherUnit == "celsius" }>Celsius</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label>Weather Cache (minutes)</label>
+					<input type="number" name="weather_cache_minutes"
+						value={ fmt.Sprintf("%d", settings.WeatherCacheMinutes) }
+						hx-put="/admin/settings" hx-trigger="change" hx-swap="none"/>
+				</div>
+				<div class="form-group full">
+					<label>Defaults</label>
+					<div class="toggle-group">
+						@DefaultToggle("default_open_in_new_tab", "/admin/settings/toggle/new-tab", settings.DefaultOpenInNewTab)
+						@DefaultToggle("default_private", "/admin/settings/toggle/private", settings.DefaultPrivate)
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}

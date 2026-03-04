@@ -1,0 +1,352 @@
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body {
+  --spacing-ui:10px;
+  --grid-cols-1:repeat(1,minmax(min-content,1fr));
+  --grid-cols-2:repeat(2,minmax(min-content,1fr));
+  --grid-cols-3:repeat(3,minmax(min-content,1fr));
+  --grid-cols-4:repeat(4,minmax(min-content,1fr));
+  background-color:var(--color-background);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  font-size:14px;
+  min-height:100vh;
+  min-height:100dvh;
+  transition:background-color .3s;
+}
+
+a {
+  color:var(--color-primary);
+  text-decoration:none;
+  white-space:nowrap;
+}
+
+.Layout_Container {
+  margin:0 auto;
+  padding:20px 10px 10px 10px;
+  width:100%;
+}
+
+@media (pointer: coarse) and (width <= 768px) {
+  .Layout_Container {
+    padding-top:0;
+  }
+}
+
+@media (min-width:769px) {
+  .Layout_Container {
+    width:90%;
+  }
+}
+
+@media (min-width:1201px) {
+  .Layout_Container {
+    padding:20px 125px 25px 125px;
+  }
+}
+
+.SectionHeadline {
+  color:var(--color-primary);
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:16px;
+  text-transform:uppercase;
+}
+
+.Home_HomeSpace {
+  height:20px;
+}
+
+.ContentGrid {
+  display:grid;
+  grid-template-columns:var(--grid-cols-1);
+  align-items:start;
+  gap:0;
+}
+
+@media (min-width:430px) {
+  .ContentGrid {
+    grid-template-columns:var(--grid-cols-2);
+  }
+}
+
+@media (min-width:670px) {
+  .ContentGrid {
+    grid-template-columns:var(--grid-cols-3);
+  }
+}
+
+@media (min-width:900px) {
+  .ContentGrid {
+    grid-template-columns:var(--grid-cols-4);
+  }
+}
+
+.ContentGrid_Header {
+  grid-column:1/-1;
+  margin-bottom:16px;
+}
+
+.ContentGrid_Spacer {
+  grid-column:1/-1;
+}
+
+.ContentGrid_SearchBar {
+  grid-column:1/-1;
+}
+
+.AppCard {
+  align-items:center;
+  display:flex;
+  margin-bottom:8px;
+  width:100%;
+}
+
+.AppCard_Icon {
+  align-items:center;
+  display:flex;
+  height:35px;
+  justify-content:center;
+  margin-right:.5em;
+  width:35px;
+}
+
+.AppCard_Icon svg {
+  display:block;
+  width:31.5px;
+  height:31.5px;
+  fill:var(--color-primary);
+}
+
+.AppCard_Details {
+  text-transform:uppercase;
+}
+
+.AppCard_Details h5 {
+  color:var(--color-primary);
+  font-size:1.15em;
+  font-weight:500;
+  letter-spacing:-0.01em;
+  margin-bottom:-4px;
+}
+
+.AppCard_Details span {
+  color:var(--color-accent);
+  font-size:.9em;
+  font-weight:400;
+  letter-spacing:-0.01em;
+  opacity:1;
+}
+
+@media (min-width:500px) {
+  .AppCard {
+    border-radius:4px;
+    padding:2px 6px 2px 0;
+    transition:all .1s;
+  }
+
+  .AppCard:hover {
+    background-color:var(--color-hover);
+  }
+}
+
+
+.BookmarkCard {
+  margin-bottom:30px;
+}
+
+.BookmarkCard h3 {
+  color:var(--color-accent);
+  font-size:16px;
+  font-weight:400;
+  margin-bottom:10px;
+  text-transform:uppercase;
+}
+
+.BookmarkCard_Bookmarks {
+  display:flex;
+  flex-direction:column;
+}
+
+.BookmarkCard_Bookmarks a {
+  border-radius:4px;
+  display:flex;
+  align-items:center;
+  line-height:1.4;
+  padding:4px 6px 4px 0;
+  transition:all .1s;
+}
+
+.BookmarkCard_Bookmarks a .BookmarkCard_Icon {
+  flex-shrink:0;
+}
+
+.BookmarkCard a:hover {
+  background-color:var(--color-hover);
+}
+
+.BookmarkCard_Icon {
+  align-items:center;
+  display:flex;
+  height:20px;
+  justify-content:center;
+  margin-right:2px;
+  width:20px;
+}
+
+.BookmarkCard_Icon svg {
+  display:block;
+  width:18px;
+  height:18px;
+  fill:var(--color-primary);
+}
+
+.SearchBar_Container {
+  position:relative;
+  width:100%;
+}
+
+.SearchBar {
+  background-color:initial;
+  border:none;
+  border-bottom:2px solid var(--color-accent);
+  border-radius:0;
+  color:var(--color-primary);
+  margin-bottom:20px;
+  opacity:.5;
+  padding:10px 32px 10px 0;
+  transition:all .2s;
+  width:100%;
+}
+
+.SearchBar:focus {
+  opacity:1;
+  outline:none;
+}
+
+.SearchBar:disabled {
+  opacity:.3;
+  cursor:not-allowed;
+}
+
+.SearchBar_Icon {
+  position:absolute;
+  right:2px;
+  top:10px;
+  color:var(--color-accent);
+  opacity:.5;
+  pointer-events:none;
+}
+
+.Header h1 {
+  color:var(--color-primary);
+  display:inline-block;
+  font-size:4em;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.Header_Main {
+  align-items:center;
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:2.5rem;
+}
+
+.WeatherWidget {
+  display:none;
+}
+
+.WeatherWidget_Icon {
+  align-items:center;
+  display:flex;
+  height:50px;
+  justify-content:center;
+  width:50px;
+}
+
+.WeatherWidget_Icon svg {
+  display:block;
+  width:50px;
+  height:50px;
+  fill:var(--color-accent);
+}
+
+.WeatherWidget_Details {
+  color:var(--color-primary);
+  display:flex;
+  flex-direction:column;
+  font-size:16px;
+  font-weight:500;
+  justify-content:center;
+  margin-left:10px;
+}
+
+.WeatherWidget_Details span:first-child {
+  border-bottom:1px solid var(--color-primary);
+  padding-bottom:5px;
+}
+
+.WeatherWidget_Details span:last-child {
+  padding-top:5px;
+}
+
+@media (min-width:600px) {
+  .WeatherWidget {
+    display:flex;
+  }
+}
+
+html {
+  display:block;
+  background-color:var(--color-background);
+}
+
+.Footer {
+  text-align:center;
+  margin-top:2rem;
+  padding:1rem;
+  font-size:.875rem;
+  color:#8a9099;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.5rem;
+}
+
+.Footer a {
+  color:inherit;
+  text-decoration:none;
+}
+
+.Footer span {
+  margin:0;
+}
+
+.Footer form {
+  display:flex;
+  align-items:center;
+  gap:.25rem;
+}
+
+.Footer label {
+  color:inherit;
+}
+
+.Footer select {
+  background-color:var(--color-background);
+  border:1px solid var(--color-accent);
+  border-radius:4px;
+  color:var(--color-primary);
+  font-size:.875rem;
+  padding:.25rem .5rem;
+  cursor:pointer;
+}
+
+.Footer select:focus {
+  outline:2px solid var(--color-accent);
+  outline-offset:2px;
+}

@@ -1,0 +1,12 @@
+/* Monokai Theme */
+
+:root {
+  --color-background: #272822;
+  --color-primary: #f8f8f2;
+  --color-accent: #66d9ef;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #f92672;
+  --color-success: #a6e22e;
+}

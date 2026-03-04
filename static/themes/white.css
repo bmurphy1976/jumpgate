@@ -1,0 +1,12 @@
+/* White Theme - Professional Light Mode */
+
+:root {
+  --color-background: #ffffff;
+  --color-primary: #1a1a1a;
+  --color-accent: #2563eb;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(0,0,0,.03);
+  --color-border: rgba(0,0,0,.12);
+  --color-danger: #dc2626;
+  --color-success: #16a34a;
+}

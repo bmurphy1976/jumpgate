@@ -1,0 +1,12 @@
+/* Gruvbox Dark Theme */
+
+:root {
+  --color-background: #282828;
+  --color-primary: #ebdbb2;
+  --color-accent: #fabd2f;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #fb4934;
+  --color-success: #b8bb26;
+}

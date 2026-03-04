@@ -1,0 +1,12 @@
+/* Night Owl Theme */
+
+:root {
+  --color-background: #011627;
+  --color-primary: #d6deeb;
+  --color-accent: #82aaff;
+  --color-hover: rgba(255,255,255,.1);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #ef5350;
+  --color-success: #22da6e;
+}

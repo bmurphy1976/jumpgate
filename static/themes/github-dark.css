@@ -1,0 +1,12 @@
+/* GitHub Dark Theme */
+
+:root {
+  --color-background: #0d1117;
+  --color-primary: #c9d1d9;
+  --color-accent: #58a6ff;
+  --color-hover: rgba(255,255,255,.1);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #f85149;
+  --color-success: #3fb950;
+}

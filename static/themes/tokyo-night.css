@@ -1,0 +1,12 @@
+/* Tokyo Night Theme */
+
+:root {
+  --color-background: #1a1b26;
+  --color-primary: #c0caf5;
+  --color-accent: #7aa2f7;
+  --color-hover: rgba(255,255,255,.1);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #f7768e;
+  --color-success: #9ece6a;
+}

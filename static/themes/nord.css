@@ -1,0 +1,12 @@
+/* Nord Theme */
+
+:root {
+  --color-background: #2e3440;
+  --color-primary: #eceff4;
+  --color-accent: #88c0d0;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #bf616a;
+  --color-success: #a3be8c;
+}

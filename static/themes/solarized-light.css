@@ -1,0 +1,12 @@
+/* Solarized Light Theme */
+
+:root {
+  --color-background: #fdf6e3;
+  --color-primary: #657b83;
+  --color-accent: #268bd2;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(0,0,0,.03);
+  --color-border: rgba(0,0,0,.12);
+  --color-danger: #dc322f;
+  --color-success: #859900;
+}

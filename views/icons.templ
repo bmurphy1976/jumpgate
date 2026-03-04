@@ -1,0 +1,16 @@
+package views
+
+templ IconGrid(icons []string) {
+	for _, icon := range icons {
+		<div class="icon-picker-item"
+			data-icon={ icon }
+			onclick="selectIcon(this.dataset.icon)"
+			title={ icon }
+		>
+			<span class={ "mdi mdi-" + icon }></span>
+		</div>
+	}
+	if len(icons) == 0 {
+		<div style="grid-column:1/-1;text-align:center;padding:1rem;opacity:.5;">No matches</div>
+	}
+}

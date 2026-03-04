@@ -1,0 +1,53 @@
+title: My Dashboard
+categories:
+- name: Favorites
+  links:
+  - name: Hacker News
+    url: https://news.ycombinator.com/
+    mobile_url: https://hackerweb.app/
+    icon: newspaper-variant-outline
+  - name: GitHub
+    url: https://github.com/
+    icon: github
+  - name: Stack Overflow
+    url: https://stackoverflow.com/
+    icon: stack-overflow
+
+- name: News & Reading
+  links:
+  - name: Reddit
+    url: https://www.reddit.com/
+    icon: reddit
+  - name: Wikipedia
+    url: https://en.wikipedia.org/
+    icon: wikipedia
+  - name: Ars Technica
+    url: https://arstechnica.com/
+    icon: newspaper-variant-outline
+
+- name: Development Tools
+  links:
+  - name: Docker Hub
+    url: https://hub.docker.com/
+    icon: docker
+  - name: PyPI
+    url: https://pypi.org/
+    icon: language-python
+  - name: npm
+    url: https://www.npmjs.com/
+    icon: npm
+
+weather:
+  default_latitude: 40.7128
+  default_longitude: -74.0060
+  unit: fahrenheit
+  cache_minutes: 30
+
+# Link Configuration Options:
+# - url (required): Primary URL for the link
+# - mobile_url (optional): Alternative URL to navigate to when user is on a mobile device
+#   The primary URL's domain is always displayed in the UI regardless of device
+#   Example: url: https://news.ycombinator.com/, mobile_url: https://hackerweb.app/
+# - icon (optional): Material Design Icon name from https://pictogrammers.com/library/mdi/
+# - open_in_new_tab (optional): Set to true to open link in new tab
+# - private (optional): Set to true to hide link unless authorized via reverse proxy headers

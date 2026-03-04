@@ -1,0 +1,12 @@
+/* ANSI BBS Theme - Blue on Black */
+
+:root {
+  --color-background: #000000;
+  --color-primary: #0055ff;
+  --color-accent: #cccc00;
+  --color-hover: #1a1a1a;
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #ff5555;
+  --color-success: #55ff55;
+}

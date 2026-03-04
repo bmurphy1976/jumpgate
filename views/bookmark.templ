@@ -1,0 +1,115 @@
+package views
+
+import (
+	"dashboard/model"
+	"fmt"
+	"strings"
+)
+
+templ BookmarkRow(bm model.Bookmark, settings model.Settings, effectiveDefaultPrivate bool, effectiveDefaultNewTab bool) {
+	<tbody class="bookmark-entry" data-bookmark-id={ fmt.Sprintf("%d", bm.ID) }>
+		<tr class="bookmark-row" tabindex="0" data-keywords={ strings.Join(bm.Keywords, " ") }
+			onclick="toggleEditRow(this)"
+			onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleEditRow(this)}">
+			<td class="td-drag" onclick="event.stopPropagation()">
+				<span class="drag-handle mdi mdi-drag" title="Drag to reorder"></span>
+			</td>
+			<td class="td-icon">
+				if bm.Icon != "" {
+					<span class={ "mdi mdi-" + bm.Icon }></span>
+				}
+			</td>
+			<td class="td-name">{ bm.Name }</td>
+			<td class="td-url">{ bm.URL }</td>
+			<td class="td-actions" onclick="event.stopPropagation()">
+				@BookmarkEnabledToggle(fmt.Sprintf("/admin/bookmarks/%d/toggle/enabled", bm.ID), bm.Enabled)
+				@BookmarkHeaderToggle("private", fmt.Sprintf("bm-%d-private-toggle", bm.ID), fmt.Sprintf("/admin/bookmarks/%d/toggle/private", bm.ID), bm.Private, effectiveDefaultPrivate, false)
+				@BookmarkHeaderToggle("newtab", fmt.Sprintf("bm-%d-newtab-toggle", bm.ID), fmt.Sprintf("/admin/bookmarks/%d/toggle/new-tab", bm.ID), bm.OpenInNewTab, effectiveDefaultNewTab, false)
+				<button class="btn-icon mdi mdi-content-duplicate" title="Duplicate"
+					hx-post={ fmt.Sprintf("/admin/bookmarks/%d/duplicate", bm.ID) }
+					hx-target="closest .bookmark-entry"
+					hx-swap="afterend"></button>
+				<button class="btn-icon danger mdi mdi-trash-can-outline" title="Delete"
+					data-confirm-msg={ fmt.Sprintf("Delete %s?", bm.Name) }
+					onclick="showConfirm(this.dataset.confirmMsg, this)"
+					hx-delete={ fmt.Sprintf("/admin/bookmarks/%d", bm.ID) }
+					hx-target="closest .bookmark-entry"
+					hx-swap="outerHTML swap:200ms"
+					hx-trigger="confirmed"></button>
+			</td>
+		</tr>
+		<tr class="edit-row">
+			<td colspan="5">
+				<div class="edit-form">
+					<div class="form-grid">
+						<div class="form-group">
+							<label>Name</label>
+							<input type="text" name="name" value={ bm.Name } autocomplete="off" data-1p-ignore
+								hx-put={ fmt.Sprintf("/admin/bookmarks/%d", bm.ID) }
+								hx-trigger="change" hx-swap="none"
+								hx-on::after-request="this.closest('.bookmark-entry').querySelector('.td-name').textContent = this.value"/>
+						</div>
+						<div class="form-group">
+							<label>Icon</label>
+							<div class="icon-input-group">
+								<input type="text" name="icon" value={ bm.Icon }
+									hx-put={ fmt.Sprintf("/admin/bookmarks/%d", bm.ID) }
+									hx-trigger="change" hx-swap="none"
+									onchange="const td=this.closest('.bookmark-entry').querySelector('.td-icon');td.innerHTML=this.value?'<span class=&quot;mdi mdi-'+this.value+'&quot;></span>':'';"/>
+								<button type="button"
+									class="icon-picker-btn mdi mdi-image-search-outline"
+									title="Choose icon"
+									popovertarget="iconPickerOverlay"></button>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="label-with-link">
+								URL
+								if bm.URL != "" {
+									<a href={ bm.URL } target="_blank" class="label-link mdi mdi-open-in-new" title="Open URL"></a>
+								}
+							</label>
+							<input type="url" name="url" value={ bm.URL }
+								hx-put={ fmt.Sprintf("/admin/bookmarks/%d", bm.ID) }
+								hx-trigger="change" hx-swap="none"
+								oninput="const lbl=this.previousElementSibling;let a=lbl.querySelector('.label-link');if(this.value){if(!a){a=document.createElement('a');a.className='label-link mdi mdi-open-in-new';a.title='Open URL';a.target='_blank';lbl.appendChild(a);}a.href=this.value;}else if(a){a.remove();}"/>
+						</div>
+						<div class="form-group">
+							<label class="label-with-link">
+								Mobile URL
+								if bm.MobileURL != "" {
+									<a href={ bm.MobileURL } target="_blank" class="label-link mdi mdi-open-in-new" title="Open Mobile URL"></a>
+								}
+							</label>
+							<input type="url" name="mobile_url" value={ bm.MobileURL }
+								hx-put={ fmt.Sprintf("/admin/bookmarks/%d", bm.ID) }
+								hx-trigger="change" hx-swap="none"
+								oninput="const lbl=this.previousElementSibling;let a=lbl.querySelector('.label-link');if(this.value){if(!a){a=document.createElement('a');a.className='label-link mdi mdi-open-in-new';a.title='Open Mobile URL';a.target='_blank';lbl.appendChild(a);}a.href=this.value;}else if(a){a.remove();}"/>
+						</div>
+						<div class="form-group keywords-group">
+							<label>Keywords</label>
+							<input type="hidden" name="keywords" value={ strings.Join(bm.Keywords, " ") }
+								hx-put={ fmt.Sprintf("/admin/bookmarks/%d", bm.ID) }
+								hx-trigger="change" hx-swap="none"
+								onchange="this.closest('.bookmark-entry').querySelector('.bookmark-row').dataset.keywords=this.value"/>
+							<div class="keyword-tags" onclick="this.querySelector('.keyword-tag-input').focus()">
+								for _, kw := range bm.Keywords {
+									<span class="keyword-tag" data-keyword={ kw }>
+										{ kw }
+										<button type="button" class="keyword-tag-remove" onclick="removeKeyword(this)" aria-label={ "Remove " + kw }>×</button>
+									</span>
+								}
+								<input type="text" class="keyword-tag-input"
+									if len(bm.Keywords) == 0 {
+										placeholder="Add keywords…"
+									}
+									onkeydown="handleKeywordKeydown(event)"
+									oninput="if(this.value.includes(' ')){commitKeyword(this)}"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+}

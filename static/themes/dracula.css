@@ -1,0 +1,12 @@
+/* Dracula Theme */
+
+:root {
+  --color-background: #282a36;
+  --color-primary: #f8f8f2;
+  --color-accent: #bd93f9;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #ff5555;
+  --color-success: #50fa7b;
+}

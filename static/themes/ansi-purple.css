@@ -1,0 +1,12 @@
+/* ANSI BBS Theme - 90s bulletin board system aesthetic */
+
+:root {
+  --color-background: #000000;
+  --color-primary: #00ffff;
+  --color-accent: #ff00ff;
+  --color-hover: #1a1a1a;
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #ff5555;
+  --color-success: #55ff55;
+}

@@ -1,0 +1,12 @@
+/* Default Theme - Dark Blue */
+
+:root {
+  --color-background: #242b33;
+  --color-primary: #effbff;
+  --color-accent: #6ee2ff;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #ff6b6b;
+  --color-success: #69db7c;
+}

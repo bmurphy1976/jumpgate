@@ -1,0 +1,12 @@
+/* Catppuccin Mocha Theme */
+
+:root {
+  --color-background: #1e1e2e;
+  --color-primary: #cdd6f4;
+  --color-accent: #89b4fa;
+  --color-hover: rgba(0,0,0,.2);
+  --color-surface: rgba(255,255,255,.05);
+  --color-border: rgba(255,255,255,.1);
+  --color-danger: #f38ba8;
+  --color-success: #a6e3a1;
+}

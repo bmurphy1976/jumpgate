@@ -1,0 +1,232 @@
+package views
+
+// HeaderToggle renders a 3-state privacy toggle for category headers.
+templ HeaderToggle(id string, url string, value *bool, defaultPrivate bool, oob bool) {
+	<button id={ id }
+		class="header-toggle"
+		data-state={ toggleState(value) }
+		title={ headerToggleTitle(value) }
+		if oob {
+			hx-swap-oob="outerHTML"
+		}
+		hx-post={ url }
+		hx-target="this"
+		hx-swap="outerHTML"
+	>
+		<span class={ headerToggleIcon(value, defaultPrivate) }></span>
+	</button>
+}
+
+// BookmarkHeaderToggle renders an icon-only 3-state toggle for bookmark row actions.
+templ BookmarkHeaderToggle(toggleType string, id string, url string, value *bool, defaultValue bool, oob bool) {
+	<button id={ id }
+		class="header-toggle"
+		data-state={ toggleState(value) }
+		title={ bookmarkToggleTitle(toggleType, value) }
+		if oob {
+			hx-swap-oob="outerHTML"
+		}
+		hx-post={ url }
+		hx-target="this"
+		hx-swap="outerHTML"
+	>
+		<span class={ bookmarkToggleIcon(toggleType, value, defaultValue) }></span>
+	</button>
+}
+
+// BookmarkToggle renders a 3-state toggle for bookmark edit rows.
+templ BookmarkToggle(toggleType string, url string, value *bool, defaultValue bool) {
+	<button class="toggle-btn"
+		data-state={ toggleState(value) }
+		data-toggle={ toggleType }
+		title={ bookmarkToggleTitle(toggleType, value) }
+		hx-post={ url }
+		hx-target="this"
+		hx-swap="outerHTML"
+	>
+		<span class={ bookmarkToggleIcon(toggleType, value, defaultValue) }></span>
+		<span class="toggle-label">{ bookmarkToggleLabel(toggleType, value) }</span>
+	</button>
+}
+
+// CategoryEnabledToggle renders a 2-state enable/disable toggle for category headers.
+templ CategoryEnabledToggle(url string, enabled bool) {
+	<button class="header-toggle"
+		data-state={ boolState(enabled) }
+		data-type="enabled"
+		title={ enabledToggleTitle(enabled) }
+		hx-post={ url }
+		hx-target="this"
+		hx-swap="outerHTML"
+	>
+		<span class={ enabledToggleIcon(enabled) }></span>
+	</button>
+}
+
+// BookmarkEnabledToggle renders a 2-state enable/disable toggle for bookmark rows.
+templ BookmarkEnabledToggle(url string, enabled bool) {
+	<button class="header-toggle"
+		data-state={ boolState(enabled) }
+		data-type="enabled"
+		title={ enabledToggleTitle(enabled) }
+		hx-post={ url }
+		hx-target="this"
+		hx-swap="outerHTML"
+	>
+		<span class={ enabledToggleIcon(enabled) }></span>
+	</button>
+}
+
+// DefaultToggle renders a 2-state toggle for settings defaults.
+templ DefaultToggle(field string, url string, value bool) {
+	<button class="toggle-btn"
+		data-state={ boolState(value) }
+		data-toggle={ "default-" + defaultToggleType(field) }
+		title={ defaultToggleTitle(field, value) }
+		hx-post={ url }
+		hx-target="this"
+		hx-swap="outerHTML"
+	>
+		<span class={ defaultToggleIcon(field, value) }></span>
+	</button>
+}
+
+func toggleState(value *bool) string {
+	if value == nil {
+		return "inherit"
+	}
+	if *value {
+		return "on"
+	}
+	return "off"
+}
+
+func boolState(value bool) string {
+	if value {
+		return "on"
+	}
+	return "off"
+}
+
+func headerToggleTitle(value *bool) string {
+	if value == nil {
+		return "Public: Inherit"
+	}
+	if *value {
+		return "Public: No"
+	}
+	return "Public: Yes"
+}
+
+func headerToggleIcon(value *bool, defaultPrivate bool) string {
+	effective := defaultPrivate
+	if value != nil {
+		effective = *value
+	}
+	if effective {
+		return "mdi mdi-eye-off-outline"
+	}
+	return "mdi mdi-eye-outline"
+}
+
+func bookmarkToggleTitle(toggleType string, value *bool) string {
+	if toggleType == "newtab" {
+		if value == nil {
+			return "New Tab: Inherit"
+		}
+		if *value {
+			return "New Tab: Yes"
+		}
+		return "New Tab: No"
+	}
+	if value == nil {
+		return "Public: Inherit"
+	}
+	if *value {
+		return "Public: No"
+	}
+	return "Public: Yes"
+}
+
+func bookmarkToggleIcon(toggleType string, value *bool, defaultValue bool) string {
+	effective := defaultValue
+	if value != nil {
+		effective = *value
+	}
+	if toggleType == "newtab" {
+		if effective {
+			return "mdi mdi-open-in-new"
+		}
+		return "mdi mdi-open-in-app"
+	}
+	if effective {
+		return "mdi mdi-eye-off-outline"
+	}
+	return "mdi mdi-eye-outline"
+}
+
+func bookmarkToggleLabel(toggleType string, value *bool) string {
+	if toggleType == "newtab" {
+		if value == nil {
+			return "inherit"
+		}
+		if *value {
+			return "new tab"
+		}
+		return "same tab"
+	}
+	if value == nil {
+		return "inherit"
+	}
+	if *value {
+		return "private"
+	}
+	return "public"
+}
+
+func defaultToggleType(field string) string {
+	if field == "default_open_in_new_tab" {
+		return "newtab"
+	}
+	return "private"
+}
+
+func defaultToggleTitle(field string, value bool) string {
+	if field == "default_open_in_new_tab" {
+		if value {
+			return "New Tab: Yes"
+		}
+		return "New Tab: No"
+	}
+	if value {
+		return "Public: No"
+	}
+	return "Public: Yes"
+}
+
+func defaultToggleIcon(field string, value bool) string {
+	if field == "default_open_in_new_tab" {
+		if value {
+			return "mdi mdi-open-in-new"
+		}
+		return "mdi mdi-open-in-app"
+	}
+	if value {
+		return "mdi mdi-eye-off-outline"
+	}
+	return "mdi mdi-eye-outline"
+}
+
+func enabledToggleTitle(enabled bool) string {
+	if enabled {
+		return "Enabled: Yes"
+	}
+	return "Enabled: No"
+}
+
+func enabledToggleIcon(enabled bool) string {
+	if enabled {
+		return "mdi mdi-toggle-switch"
+	}
+	return "mdi mdi-toggle-switch-off"
+}
