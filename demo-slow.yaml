@@ -1,0 +1,4 @@
+demo:
+  enabled: true
+  source: bookmarks.yaml.example
+slow: 2

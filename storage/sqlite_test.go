@@ -364,6 +364,47 @@ func TestToggleBookmarkPrivate(t *testing.T) {
 	}
 }
 
+func TestSearchBookmarksLikeEscape(t *testing.T) {
+	ds := setupTestDB(t)
+	favID := model.CategoryID(1)
+
+	bm, err := ds.CreateBookmark(favID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	name := "100% off"
+	url := "https://example.com/100%25off"
+	ds.UpdateBookmark(bm.ID, model.BookmarkUpdate{Name: &name, URL: &url})
+
+	bm2, err := ds.CreateBookmark(favID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	name2 := "1000 items"
+	url2 := "https://example.com/1000"
+	ds.UpdateBookmark(bm2.ID, model.BookmarkUpdate{Name: &name2, URL: &url2})
+
+	// Search for literal "100%" — should match only the first bookmark
+	results, err := ds.SearchBookmarks("", "100%")
+	if err != nil {
+		t.Fatalf("SearchBookmarks failed: %v", err)
+	}
+	if len(results) != 1 {
+		t.Errorf("expected 1 result for '100%%', got %d", len(results))
+	} else if results[0].ID != bm.ID {
+		t.Errorf("expected bookmark %d, got %d", bm.ID, results[0].ID)
+	}
+
+	// Search for "100" — should match both
+	results, err = ds.SearchBookmarks("", "100")
+	if err != nil {
+		t.Fatalf("SearchBookmarks failed: %v", err)
+	}
+	if len(results) != 2 {
+		t.Errorf("expected 2 results for '100', got %d", len(results))
+	}
+}
+
 func TestToggleBookmarkOpenInNewTab(t *testing.T) {
 	ds := setupTestDB(t)
 	bm, err := ds.CreateBookmark(model.CategoryID(1))

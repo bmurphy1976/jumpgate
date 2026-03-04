@@ -19,6 +19,9 @@ build: deps
 	@mkdir -p $(ROOT_DIR)/bin
 	@go build -o bin/jumpgate ./cmd/jumpgate
 	@echo "✓ Built bin/jumpgate"
+	@echo "Building jumpgate-cli..."
+	@go build -o bin/jumpgate-cli ./cmd/jumpgate-cli
+	@echo "✓ Built bin/jumpgate-cli"
 
 run: build
 	@mkdir -p $(ROOT_DIR)/data
@@ -28,15 +31,15 @@ run: build
 debug: build
 	@mkdir -p $(ROOT_DIR)/data
 	@echo "Starting jumpgate server on :8080 (auth disabled)..."
-	@$(ROOT_DIR)/bin/jumpgate server --no-auth
+	@$(ROOT_DIR)/bin/jumpgate server --config $(ROOT_DIR)/debug.yaml
 
 demo: build
 	@echo "Starting jumpgate demo server on :8080..."
-	@$(ROOT_DIR)/bin/jumpgate server --demo $(ROOT_DIR)/config.yaml.example
+	@$(ROOT_DIR)/bin/jumpgate server --config $(ROOT_DIR)/demo.yaml
 
 demo-slow: build
 	@echo "Starting jumpgate demo-slow server on :8080..."
-	@$(ROOT_DIR)/bin/jumpgate server --demo $(ROOT_DIR)/config.yaml.example --slow
+	@$(ROOT_DIR)/bin/jumpgate server --config $(ROOT_DIR)/demo-slow.yaml
 
 test: generate
 	@echo "Running Go tests..."

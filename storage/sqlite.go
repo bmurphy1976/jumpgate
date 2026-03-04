@@ -476,7 +476,7 @@ func (s *SQLiteDB) UpdateBookmark(id model.BookmarkID, update model.BookmarkUpda
 	}
 	if update.Keywords != nil {
 		setClauses = append(setClauses, "keywords = ?")
-		args = append(args, *update.Keywords)
+		args = append(args, strings.Join(*update.Keywords, " "))
 	}
 
 	if len(setClauses) == 0 {
@@ -578,6 +578,57 @@ func (s *SQLiteDB) MoveBookmark(id model.BookmarkID, targetCategoryID model.Cate
 		WHERE id = ?
 	`, targetCategoryID, position, id)
 	return err
+}
+
+func escapeLike(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `%`, `\%`)
+	s = strings.ReplaceAll(s, `_`, `\_`)
+	return s
+}
+
+func (s *SQLiteDB) SearchBookmarks(url, query string) ([]model.Bookmark, error) {
+	var conditions []string
+	var args []any
+
+	if url != "" {
+		conditions = append(conditions, "b.url = ?")
+		args = append(args, url)
+	}
+	if query != "" {
+		conditions = append(conditions, "(b.name LIKE ? ESCAPE '\\' OR b.url LIKE ? ESCAPE '\\' OR b.keywords LIKE ? ESCAPE '\\')")
+		pattern := "%" + escapeLike(query) + "%"
+		args = append(args, pattern, pattern, pattern)
+	}
+
+	if len(conditions) == 0 {
+		return []model.Bookmark{}, nil
+	}
+
+	q := "SELECT id, category_id, name, url, mobile_url, icon, enabled, open_in_new_tab, private, position, keywords FROM bookmarks b WHERE " + strings.Join(conditions, " AND ") + " ORDER BY name"
+	rows, err := s.db.Query(q, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var bookmarks []model.Bookmark
+	for rows.Next() {
+		var b model.Bookmark
+		var openInNewTab, private sql.NullBool
+		var keywords string
+		if err := rows.Scan(&b.ID, &b.CategoryID, &b.Name, &b.URL, &b.MobileURL, &b.Icon, &b.Enabled, &openInNewTab, &private, &b.Position, &keywords); err != nil {
+			return nil, err
+		}
+		b.OpenInNewTab = nullBoolPtr(openInNewTab)
+		b.Private = nullBoolPtr(private)
+		b.Keywords = strings.Fields(keywords)
+		bookmarks = append(bookmarks, b)
+	}
+	if bookmarks == nil {
+		bookmarks = []model.Bookmark{}
+	}
+	return bookmarks, rows.Err()
 }
 
 func (s *SQLiteDB) ToggleBookmarkPrivate(id model.BookmarkID) (*bool, error) {

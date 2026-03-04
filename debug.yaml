@@ -1,0 +1,7 @@
+auth: false
+
+api:
+  swagger: true
+
+mcp:
+  enabled: true

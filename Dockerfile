@@ -25,8 +25,6 @@ USER app
 
 VOLUME /app/data
 
-ENV DB_FILE=/app/data/jumpgate.db
-
 EXPOSE 8080
 
 ENTRYPOINT ["./jumpgate"]

@@ -14,6 +14,8 @@ These principles guide all technical decisions in Jumpgate.
 
 - **CDN for static assets** — JS libraries and icon fonts load from CDN. Leverage browser caching. Don't self-host what CDNs do better.
 
+- **Prefer consistency** — When two approaches work equally well, choose the one that matches existing patterns. Consistency makes systems predictable and easier to reason about.
+
 ## Implementation Principles
 
 - **Simplicity first** — Minimal dependencies, stdlib where sufficient.
@@ -45,4 +47,4 @@ These principles guide all technical decisions in Jumpgate.
 - Self-hosted fonts or JS libraries (CDN preferred)
 - TypeScript, React, or any JS framework
 - ORM or database abstraction beyond the Datasource interface
-- JSON API for external consumers (HTML-first, HTMX fragments for interactivity)
+- Real-time collaboration or multi-user editing

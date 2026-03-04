@@ -35,25 +35,17 @@ func main() {
 
 func printUsage() {
 	fmt.Fprintln(os.Stderr, "Usage:")
-	fmt.Fprintln(os.Stderr, "  jumpgate server [--db PATH] [--addr ADDR] [--no-auth] [--slow]")
-	fmt.Fprintln(os.Stderr, "  jumpgate server --demo config.yaml [--addr ADDR] [--slow]")
+	fmt.Fprintln(os.Stderr, "  jumpgate server [--config PATH]")
 	fmt.Fprintln(os.Stderr, "  jumpgate import [--force] [--db PATH] config.yaml")
 	fmt.Fprintln(os.Stderr, "  jumpgate export [--force] [--db PATH] [output.yaml]")
 }
 
 func runServer(args []string) {
 	fs := flag.NewFlagSet("server", flag.ExitOnError)
-	dbPath := fs.String("db", envOr("DB_FILE", defaultDBPath), "path to SQLite database")
-	addr := fs.String("addr", envOr("LISTEN_ADDR", ":8080"), "listen address")
-	noAuth := fs.Bool("no-auth", false, "disable admin authorization check")
-	demo := fs.String("demo", "", "path to YAML config for demo mode (in-memory, per-session)")
-	slow := fs.Bool("slow", false, "add 2s delay to every request (latency testing)")
+	configPath := fs.String("config", "", "path to jumpgate.yaml config file")
 	fs.Parse(args)
 
-	if *demo != "" && *dbPath != envOr("DB_FILE", defaultDBPath) {
-		fmt.Fprintln(os.Stderr, "error: --demo and --db are mutually exclusive")
-		os.Exit(1)
-	}
+	cfg := loadServerConfig(*configPath)
 
 	il, err := icons.New()
 	if err != nil {
@@ -67,24 +59,23 @@ func runServer(args []string) {
 	var (
 		resolver handlers.DSResolver
 		store    *storage.SessionStore
-		demoMode bool
 	)
 
-	if *demo != "" {
-		cfg, err := config.Load(*demo)
+	if cfg.Demo.Enabled {
+		bookmarksCfg, err := config.Load(cfg.Demo.Source)
 		if err != nil {
 			slog.Error("failed to load demo config", "error", err)
 			os.Exit(1)
 		}
 
-		store = storage.NewSessionStore(cfg, wrap)
+		store = storage.NewSessionStore(bookmarksCfg, wrap)
 		resolver = handlers.SessionResolver(store)
 
-		demoMode = true
-		*noAuth = true
-		slog.Info("server starting (demo mode)", "addr", *addr, "config", *demo)
+		f := false
+		cfg.Auth = &f
+		slog.Info("server starting (demo mode)", "addr", cfg.Addr, "source", cfg.Demo.Source)
 	} else {
-		ds, err := storage.NewSQLiteDB(*dbPath)
+		ds, err := storage.NewSQLiteDB(cfg.DB)
 		if err != nil {
 			slog.Error("failed to open database", "error", err)
 			os.Exit(1)
@@ -92,11 +83,22 @@ func runServer(args []string) {
 		defer ds.Close()
 
 		resolver = handlers.StaticResolver(wrap(ds))
-		
-		slog.Info("server starting", "addr", *addr)
+
+		slog.Info("server starting", "addr", cfg.Addr)
 	}
 
-	if err := handlers.NewServer(resolver, il, *noAuth, demoMode, store, *slow).Start(*addr); err != nil {
+	apiEnabled := cfg.API.Tokens.HasTokens() || cfg.API.Swagger
+	slog.Info("features",
+		"auth", cfg.AuthEnabled(),
+		"api", apiEnabled,
+		"swagger", cfg.API.Swagger,
+		"mcp", cfg.MCP.Enabled,
+		"slow", cfg.Slow > 0,
+	)
+
+	srv := handlers.NewServer(cfg, resolver, il, store)
+
+	if err := srv.Start(cfg.Addr); err != nil {
 		slog.Error("server failed", "error", err)
 		os.Exit(1)
 	}
@@ -107,4 +109,19 @@ func envOr(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+// loadServerConfig loads config from the given path, or returns defaults.
+func loadServerConfig(path string) config.ServerConfig {
+	if path == "" {
+		var cfg config.ServerConfig
+		cfg.ApplyDefaults()
+		return cfg
+	}
+	cfg, err := config.LoadServerConfig(path)
+	if err != nil {
+		slog.Error("failed to load config", "path", path, "error", err)
+		os.Exit(1)
+	}
+	return cfg
 }

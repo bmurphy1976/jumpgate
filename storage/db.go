@@ -28,6 +28,7 @@ type Datasource interface {
 	SortBookmarksAlpha(categoryID model.CategoryID) error
 	ReorderBookmarks(categoryID model.CategoryID, ids []model.BookmarkID) error
 	MoveBookmark(id model.BookmarkID, targetCategoryID model.CategoryID, position int) error
+	SearchBookmarks(url, query string) ([]model.Bookmark, error)
 
 	// Toggle cycling (nil → true → false → nil)
 	ToggleCategoryPrivate(id model.CategoryID) (*bool, error)

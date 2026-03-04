@@ -101,6 +101,21 @@ func (il *Loader) saveToCache() error {
 	return nil
 }
 
+// SearchAll returns all matching icons with no limit cap.
+func (il *Loader) SearchAll(query string) []string {
+	if query == "" {
+		return il.Icons
+	}
+	q := strings.ToLower(query)
+	var results []string
+	for _, icon := range il.Icons {
+		if strings.Contains(icon, q) {
+			results = append(results, icon)
+		}
+	}
+	return results
+}
+
 func (il *Loader) Search(query string) []string {
 	if query == "" {
 		if len(il.Icons) > 50 {

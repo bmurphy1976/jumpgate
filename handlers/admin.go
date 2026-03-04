@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v5"
 )
@@ -454,7 +455,10 @@ func (h *AdminHandler) updateBookmark(c *echo.Context) error {
 		URL:       formStr(c, "url"),
 		MobileURL: formStr(c, "mobile_url"),
 		Icon:      formStr(c, "icon"),
-		Keywords:  formStr(c, "keywords"),
+	}
+	if raw := formStr(c, "keywords"); raw != nil {
+		kw := strings.Fields(*raw)
+		update.Keywords = &kw
 	}
 	if err := ds.UpdateBookmark(model.BookmarkID(id), update); err != nil {
 		return err

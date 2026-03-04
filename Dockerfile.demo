@@ -18,13 +18,12 @@ RUN adduser -D -u 1000 app
 WORKDIR /app
 
 COPY --from=builder /jumpgate .
-COPY --from=builder /build/config.yaml.example .
-
-RUN mkdir -p data && chown app:app data
+COPY --from=builder /build/bookmarks.yaml.example .
+COPY --from=builder /build/demo.yaml .
 
 USER app
 
 EXPOSE 8080
 
 ENTRYPOINT ["./jumpgate"]
-CMD ["server", "--demo", "config.yaml.example"]
+CMD ["server", "--config", "demo.yaml"]

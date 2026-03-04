@@ -134,6 +134,14 @@ func (a *annotatedDS) MoveBookmark(id model.BookmarkID, targetCategoryID model.C
 	return nil
 }
 
+func (a *annotatedDS) SearchBookmarks(url, query string) ([]model.Bookmark, error) {
+	v, err := a.ds.SearchBookmarks(url, query)
+	if err != nil {
+		return v, fmt.Errorf("search bookmarks: %w", err)
+	}
+	return v, nil
+}
+
 func (a *annotatedDS) ToggleCategoryPrivate(id model.CategoryID) (*bool, error) {
 	v, err := a.ds.ToggleCategoryPrivate(id)
 	if err != nil {

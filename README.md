@@ -49,7 +49,7 @@ jumpgate export [--force] [--db PATH] [output.yaml]
 
 ## Configuration
 
-Jumpgate stores all data in a SQLite database. Manage everything through the admin panel, or import bookmarks from a YAML file (see `config.yaml.example`).
+Jumpgate stores all data in a SQLite database. Manage everything through the admin panel, or import bookmarks from a YAML file (see `bookmarks.yaml.example`).
 
 ### Weather
 

@@ -1,0 +1,34 @@
+# Jumpgate server configuration
+# Copy to jumpgate.yaml and customize.
+
+# SQLite database path
+# db: data/jumpgate.db
+
+# Listen address
+# addr: :8080
+
+# Enable admin authorization check (reverse proxy headers)
+# auth: true
+
+# Artificial delay in seconds for non-static requests (0 = disabled)
+# slow: 0
+
+# Demo mode — in-memory per-session databases loaded from a data file
+# demo:
+#   enabled: false
+#   source: bookmarks.yaml.example
+
+# JSON API for agents, scripts, and automation
+# API is disabled when both token lists are empty.
+# api:
+#   swagger: true
+#   tokens:
+#     read-write:
+#       - "rw-secret-here"
+#     read-only:
+#       - "ro-secret-here"
+
+# MCP server (Streamable HTTP at /mcp, uses api.tokens for auth)
+# Requires api.tokens to be configured.
+# mcp:
+#   enabled: false
