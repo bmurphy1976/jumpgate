@@ -1,3 +1,8 @@
+---
+name: "update-deps"
+description: "Check this project's dependency versions, compare them to available updates, review release notes, and produce a risk-assessed update plan. Use when the user asks to audit dependency updates or runs /update-deps."
+---
+
 # update-deps
 
 Check all project dependencies for available updates and produce a risk-assessed update plan.
@@ -57,7 +62,7 @@ For every dependency where an update is available:
    | sortablejs | `https://github.com/SortableJS/Sortable/releases` |
    | @mdi/font | `https://github.com/Templarian/MaterialDesign-Webfont/releases` |
 
-   **Important:** Do NOT try to fetch GitLab pages (they use dynamic rendering and return empty content). For modernc.org/sqlite, always use the raw GitHub mirror URL above. If a release page fails to load, use `WebSearch` for `"<package> <version> release notes"` as a fallback — do not retry the same URL.
+   **Important:** Do NOT try to fetch GitLab pages (they use dynamic rendering and return empty content). For modernc.org/sqlite, always use the raw GitHub mirror URL above. If a release page fails to load, use the available web or search capability to look up `"<package> <version> release notes"` as a fallback — do not retry the same URL.
 
 3. **Flag risks clearly:**
    - Major version bumps get an explicit warning
