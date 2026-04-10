@@ -1,0 +1,7 @@
+{
+  "signingPhrase": "I have read the CLA Document and I hereby sign the CLA",
+  "signaturesBranch": "cla-signatures",
+  "signaturesPath": "signatures/cla.json",
+  "botAllowlist": ["dependabot[bot]", "github-actions[bot]"],
+  "botOverrideLabel": "cla-approved-for-bot"
+}
