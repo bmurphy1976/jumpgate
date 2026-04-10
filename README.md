@@ -79,6 +79,12 @@ Works with Authelia, OAuth2 Proxy, Traefik Forward Auth, or any proxy that sets 
 
 **Important:** Your reverse proxy must strip these headers from incoming requests before setting them, so end users cannot forge authentication. Documentation and configuration examples will be provided in the future.
 
+## Demo Mode Proxy Allowlist
+
+Demo mode isolates sessions by cookie and client IP. Set `demo.allowed_proxies` when demo mode runs behind a proxy or CDN and should use `X-Forwarded-For`. Set `demo.disable_proxy_headers: true` to ignore forwarded headers and use the direct connection address instead.
+
+Migration details for this breaking change are in [RELEASE_NOTES.md](RELEASE_NOTES.md).
+
 ## Project Structure
 
 ```

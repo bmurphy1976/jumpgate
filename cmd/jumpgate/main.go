@@ -96,7 +96,11 @@ func runServer(args []string) {
 		"slow", cfg.Slow > 0,
 	)
 
-	srv := handlers.NewServer(cfg, resolver, il, store)
+	srv, err := handlers.NewServer(cfg, resolver, il, store)
+	if err != nil {
+		slog.Error("failed to configure server", "error", err)
+		os.Exit(1)
+	}
 
 	if err := srv.Start(cfg.Addr); err != nil {
 		slog.Error("server failed", "error", err)
@@ -116,6 +120,10 @@ func loadServerConfig(path string) config.ServerConfig {
 	if path == "" {
 		var cfg config.ServerConfig
 		cfg.ApplyDefaults()
+		if err := cfg.Validate(); err != nil {
+			slog.Error("invalid config", "error", err)
+			os.Exit(1)
+		}
 		return cfg
 	}
 	cfg, err := config.LoadServerConfig(path)

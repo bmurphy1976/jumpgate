@@ -29,6 +29,8 @@ Sessions are keyed by (session cookie + client IP) for browser requests, (Bearer
 
 - **Session cap**: demo mode enforces a maximum number of concurrent sessions to prevent resource exhaustion
 - **Session TTL**: demo sessions expire after a configurable duration
+- **Allowed proxies**: when `demo.allowed_proxies` is set, demo mode uses Echo's built-in `X-Forwarded-For` extraction with those IPs and CIDRs added as trusted ranges; `demo.disable_proxy_headers: true` disables forwarded-header handling entirely
+- **Header safety**: upstream proxies must overwrite `X-Forwarded-For`, not pass through user-supplied values
 
 ## Delegated Concerns
 

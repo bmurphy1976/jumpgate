@@ -68,6 +68,8 @@ mcp:
 demo:
   enabled: true
   source: "config.yaml"
+  allowed_proxies:
+    - "127.0.0.1"
 `)
 	cfg, err := LoadServerConfig(path)
 	if err != nil {
@@ -96,6 +98,105 @@ demo:
 	}
 	if !cfg.Demo.Enabled {
 		t.Error("expected Demo enabled")
+	}
+	if cfg.Demo.DisableProxyHeaders != nil {
+		t.Error("expected demo proxy headers to be enabled by allowlist")
+	}
+	if len(cfg.Demo.AllowedProxies) != 1 || cfg.Demo.AllowedProxies[0] != "127.0.0.1" {
+		t.Errorf("unexpected AllowedProxies: %v", cfg.Demo.AllowedProxies)
+	}
+}
+
+func TestLoadServerConfigDemoRequiresAllowlistOrDisableFlag(t *testing.T) {
+	path := writeTempYAML(t, `
+demo:
+  enabled: true
+  source: "config.yaml"
+`)
+
+	_, err := LoadServerConfig(path)
+	if err == nil || err.Error() != "demo.allowed_proxies must be set unless demo.disable_proxy_headers is true when demo.enabled is true" {
+		t.Fatalf("expected demo allowlist/disable error, got %v", err)
+	}
+}
+
+func TestLoadServerConfigDemoAllowsAllowlistMode(t *testing.T) {
+	path := writeTempYAML(t, `
+demo:
+  enabled: true
+  source: "config.yaml"
+  allowed_proxies:
+    - "127.0.0.1"
+`)
+
+	cfg, err := LoadServerConfig(path)
+	if err != nil {
+		t.Fatalf("LoadServerConfig failed: %v", err)
+	}
+	if len(cfg.Demo.AllowedProxies) != 1 {
+		t.Fatalf("expected one allowed proxy, got %d", len(cfg.Demo.AllowedProxies))
+	}
+}
+
+func TestLoadServerConfigRejectsInvalidAllowedProxy(t *testing.T) {
+	path := writeTempYAML(t, `
+demo:
+  enabled: true
+  source: "config.yaml"
+  allowed_proxies:
+    - "not-an-ip"
+`)
+
+	_, err := LoadServerConfig(path)
+	if err == nil || err.Error() != `invalid demo.allowed_proxies entry "not-an-ip": must be an IP address or CIDR` {
+		t.Fatalf("expected invalid allowed proxy error, got %v", err)
+	}
+}
+
+func TestLoadServerConfigAllowsDemoWithProxyHeadersDisabled(t *testing.T) {
+	path := writeTempYAML(t, `
+demo:
+  enabled: true
+  source: "config.yaml"
+  disable_proxy_headers: true
+`)
+
+	cfg, err := LoadServerConfig(path)
+	if err != nil {
+		t.Fatalf("LoadServerConfig failed: %v", err)
+	}
+	if cfg.Demo.DisableProxyHeaders == nil || !*cfg.Demo.DisableProxyHeaders {
+		t.Fatal("expected demo proxy headers disabled")
+	}
+}
+
+func TestLoadServerConfigRejectsContradictoryDisableAndAllowlist(t *testing.T) {
+	path := writeTempYAML(t, `
+demo:
+  enabled: true
+  source: "config.yaml"
+  disable_proxy_headers: true
+  allowed_proxies:
+    - "127.0.0.1"
+`)
+
+	_, err := LoadServerConfig(path)
+	if err == nil || err.Error() != "demo.allowed_proxies must not be set when demo.disable_proxy_headers is true" {
+		t.Fatalf("expected contradictory config error, got %v", err)
+	}
+}
+
+func TestLoadServerConfigExplicitFalseStillRequiresAllowlist(t *testing.T) {
+	path := writeTempYAML(t, `
+demo:
+  enabled: true
+  source: "config.yaml"
+  disable_proxy_headers: false
+`)
+
+	_, err := LoadServerConfig(path)
+	if err == nil || err.Error() != "demo.allowed_proxies must be set unless demo.disable_proxy_headers is true when demo.enabled is true" {
+		t.Fatalf("expected missing allowlist error, got %v", err)
 	}
 }
 
