@@ -42,4 +42,4 @@ You sign this Agreement by commenting on your pull request with the following st
 
 > I have read the CLA Document and I hereby sign the CLA
 
-Your signature is recorded automatically by the CLA Assistant and applies to all contributions you submit to Jumpgate.
+Your signature is recorded automatically by the Jumpgate CLA workflow and applies to all contributions you submit to Jumpgate.
