@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"dashboard/common"
-	"dashboard/storage"
 	"net/http"
 	"strings"
 
@@ -19,7 +18,7 @@ func requireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func sessionMiddleware(store *storage.SessionStore) echo.MiddlewareFunc {
+func sessionMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
 			path := (*c).Request().URL.Path

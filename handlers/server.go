@@ -31,14 +31,40 @@ func SessionResolver(store *storage.SessionStore) DSResolver {
 	}
 }
 
-func NewServer(cfg config.ServerConfig, ds DSResolver, il *icons.Loader, store *storage.SessionStore) *echo.Echo {
+func newDemoIPExtractor(cfg config.DemoConfig) (echo.IPExtractor, error) {
+	if err := cfg.ValidateProxyHeaders(); err != nil {
+		return nil, err
+	}
+	if cfg.DisableProxyHeaders != nil && *cfg.DisableProxyHeaders {
+		return echo.ExtractIPDirect(), nil
+	}
+
+	networks, err := cfg.AllowedProxyNetworks()
+	if err != nil {
+		return nil, err
+	}
+
+	options := make([]echo.TrustOption, 0, len(networks))
+	for _, network := range networks {
+		options = append(options, echo.TrustIPRange(network))
+	}
+
+	return echo.ExtractIPFromXFFHeader(options...), nil
+}
+
+func NewServer(cfg config.ServerConfig, ds DSResolver, il *icons.Loader, store *storage.SessionStore) (*echo.Echo, error) {
 	e := echo.New()
 	e.Use(echomiddleware.RequestLogger())
 	e.Use(echomiddleware.Recover())
 	e.Use(echomiddleware.Gzip())
 
-	if store != nil {
-		e.Use(sessionMiddleware(store))
+	if cfg.Demo.Enabled {
+		ipExtractor, err := newDemoIPExtractor(cfg.Demo)
+		if err != nil {
+			return nil, err
+		}
+		e.IPExtractor = ipExtractor
+		e.Use(sessionMiddleware())
 	}
 
 	if cfg.Slow > 0 {
@@ -78,7 +104,7 @@ func NewServer(cfg config.ServerConfig, ds DSResolver, il *icons.Loader, store *
 	}))
 	e.StaticFS("/static", static.FS)
 
-	return e
+	return e, nil
 }
 
 func slowMiddleware(d time.Duration) echo.MiddlewareFunc {

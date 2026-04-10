@@ -17,6 +17,16 @@
 # demo:
 #   enabled: false
 #   source: bookmarks.yaml.example
+#
+#   # Explicit disable mode
+#   # disable_proxy_headers: true
+#
+#   # Allowlist mode: IPs and CIDRs allowed to contribute
+#   # X-Forwarded-For values when demo mode runs behind a proxy or CDN.
+#   # allowed_proxies:
+#   #   - "127.0.0.1"
+#   #   - "10.0.0.0/8"
+#   #   - "203.0.113.10"
 
 # JSON API for agents, scripts, and automation
 # API is disabled when both token lists are empty.
