@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dashboard/internal/buildinfo"
 	"dashboard/model"
 	"fmt"
 	"reflect"
@@ -256,7 +257,7 @@ func buildSpecFromRoutes(routes []apiRoute) map[string]any {
 		"openapi": "3.0.3",
 		"info": map[string]any{
 			"title":   "Jumpgate API",
-			"version": "1.0.0",
+			"version": buildinfo.ServiceVersion(),
 		},
 		"paths": paths,
 		"components": map[string]any{

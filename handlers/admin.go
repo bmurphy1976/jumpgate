@@ -3,6 +3,7 @@ package handlers
 import (
 	"dashboard/common"
 	"dashboard/icons"
+	"dashboard/internal/buildinfo"
 	"dashboard/model"
 	"dashboard/storage"
 	"dashboard/views"
@@ -102,6 +103,7 @@ func (h *AdminHandler) index(c *echo.Context) error {
 	authorized := isAuthorized(r) || h.demoMode
 	layout := views.AdminLayoutData{
 		Title:        settings.Title,
+		Version:      buildinfo.ServiceVersion(),
 		Theme:        themeData,
 		Weather:      weather,
 		IsAuthorized: authorized,

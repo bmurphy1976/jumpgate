@@ -9,6 +9,7 @@ import (
 	"dashboard/config"
 	"dashboard/handlers"
 	"dashboard/icons"
+	"dashboard/internal/buildinfo"
 	"dashboard/storage"
 )
 
@@ -73,7 +74,7 @@ func runServer(args []string) {
 
 		f := false
 		cfg.Auth = &f
-		slog.Info("server starting (demo mode)", "addr", cfg.Addr, "source", cfg.Demo.Source)
+		slog.Info("server starting (demo mode)", "addr", cfg.Addr, "source", cfg.Demo.Source, "version", buildinfo.ServiceVersion())
 	} else {
 		ds, err := storage.NewSQLiteDB(cfg.DB)
 		if err != nil {
@@ -84,7 +85,7 @@ func runServer(args []string) {
 
 		resolver = handlers.StaticResolver(wrap(ds))
 
-		slog.Info("server starting", "addr", cfg.Addr)
+		slog.Info("server starting", "addr", cfg.Addr, "version", buildinfo.ServiceVersion())
 	}
 
 	apiEnabled := cfg.API.Tokens.HasTokens() || cfg.API.Swagger

@@ -35,6 +35,17 @@ Dashboard at `http://localhost:8080`, admin at `http://localhost:8080/admin`.
 
 For local development, use `make debug` to start with auth checks disabled.
 
+Versioning details live in [VERSIONING.md](VERSIONING.md). Release notes live in [RELEASE_NOTES.md](RELEASE_NOTES.md).
+
+## Release Commands
+
+```bash
+make version         # Print the stamped service version
+make next-version    # Print the next CalVer tag version
+make release-prepare # Create the release branch, commit VERSION, push, and open the PR
+make release-publish # Tag the merged release commit on main and create the GitHub Release
+```
+
 ## CLI
 
 ```

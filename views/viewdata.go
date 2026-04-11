@@ -28,6 +28,7 @@ type CDNDeps struct {
 // AdminLayoutData bundles all parameters for the admin Layout template.
 type AdminLayoutData struct {
 	Title        string
+	Version      string
 	Theme        ThemeData
 	Weather      WeatherData
 	IsAuthorized bool

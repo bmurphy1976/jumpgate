@@ -691,6 +691,7 @@ body {
   padding: .25rem .5rem;
   cursor: pointer;
 }
+.footer-version { color: var(--color-primary); }
 
 /* CONFIRM DIALOG */
 .confirm-overlay {

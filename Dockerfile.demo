@@ -9,7 +9,7 @@ RUN go mod download
 
 COPY . .
 
-RUN templ generate && go build -o /jumpgate ./cmd/jumpgate
+RUN templ generate && go build -ldflags "$(./scripts/version.sh ldflags)" -o /jumpgate ./cmd/jumpgate
 
 FROM alpine:3
 
