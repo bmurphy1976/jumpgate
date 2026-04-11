@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"dashboard/icons"
+	"dashboard/internal/buildinfo"
 	"dashboard/model"
 	"dashboard/storage"
 
@@ -72,6 +73,15 @@ func TestAdminRequiresAuth(t *testing.T) {
 }
 
 func TestAdminIndex(t *testing.T) {
+	oldRelease := buildinfo.ReleaseVersion
+	oldCommit := buildinfo.Commit
+	buildinfo.ReleaseVersion = "2026.04.0"
+	buildinfo.Commit = "04fc78e"
+	t.Cleanup(func() {
+		buildinfo.ReleaseVersion = oldRelease
+		buildinfo.Commit = oldCommit
+	})
+
 	e, _ := setupTestServer(t)
 	rec := serve(e, authGet("/admin"))
 	if rec.Code != http.StatusOK {
@@ -79,6 +89,9 @@ func TestAdminIndex(t *testing.T) {
 	}
 	if !strings.Contains(rec.Body.String(), "<html") {
 		t.Error("expected HTML response")
+	}
+	if !strings.Contains(rec.Body.String(), "Version 2026.04.0+04fc78e") {
+		t.Error("expected stamped version in footer")
 	}
 }
 

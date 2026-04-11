@@ -10,6 +10,7 @@ import (
 
 	"dashboard/config"
 	"dashboard/icons"
+	"dashboard/internal/buildinfo"
 	"dashboard/model"
 	"dashboard/storage"
 
@@ -48,6 +49,18 @@ func apiReq(method, path string, body any, token string) *http.Request {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
 	return req
+}
+
+func setBuildInfo(t *testing.T, release, commit string) {
+	t.Helper()
+	oldRelease := buildinfo.ReleaseVersion
+	oldCommit := buildinfo.Commit
+	buildinfo.ReleaseVersion = release
+	buildinfo.Commit = commit
+	t.Cleanup(func() {
+		buildinfo.ReleaseVersion = oldRelease
+		buildinfo.Commit = oldCommit
+	})
 }
 
 // Auth tests
@@ -89,6 +102,24 @@ func TestAPIReadWriteCanWrite(t *testing.T) {
 	rec := serve(e, apiReq(http.MethodPost, "/api/categories", map[string]string{"name": "Test"}, "rw-token"))
 	if rec.Code != http.StatusCreated {
 		t.Errorf("expected 201, got %d", rec.Code)
+	}
+}
+
+func TestAPIIndexIncludesVersion(t *testing.T) {
+	setBuildInfo(t, "2026.04.0", "04fc78e")
+
+	e, _ := setupAPIServer(t)
+	rec := serve(e, apiReq(http.MethodGet, "/api", nil, ""))
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rec.Code)
+	}
+
+	var index map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &index); err != nil {
+		t.Fatalf("failed to decode response: %v", err)
+	}
+	if index["version"] != "2026.04.0+04fc78e" {
+		t.Errorf("expected stamped version, got %v", index["version"])
 	}
 }
 
@@ -298,6 +329,8 @@ func TestAPIListIcons(t *testing.T) {
 // OpenAPI + Swagger
 
 func TestAPIOpenAPISpec(t *testing.T) {
+	setBuildInfo(t, "2026.04.0", "04fc78e")
+
 	e, _ := setupAPIServer(t)
 	rec := serve(e, apiReq(http.MethodGet, "/api/openapi.json", nil, "rw-token"))
 	if rec.Code != http.StatusOK {
@@ -309,6 +342,10 @@ func TestAPIOpenAPISpec(t *testing.T) {
 	}
 	if spec["openapi"] != "3.0.3" {
 		t.Errorf("expected openapi 3.0.3, got %v", spec["openapi"])
+	}
+	info := spec["info"].(map[string]any)
+	if info["version"] != "2026.04.0+04fc78e" {
+		t.Errorf("expected stamped version, got %v", info["version"])
 	}
 }
 

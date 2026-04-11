@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"dashboard/icons"
+	"dashboard/internal/buildinfo"
 	"dashboard/model"
 	"dashboard/storage"
 
@@ -58,6 +59,22 @@ func TestMCPRequireWriteMissingLevel(t *testing.T) {
 	ctx := context.Background()
 	if err := mcpRequireWrite(ctx); err == nil {
 		t.Error("expected error for missing level, got nil")
+	}
+}
+
+func TestMCPImplementationIncludesVersion(t *testing.T) {
+	oldRelease := buildinfo.ReleaseVersion
+	oldCommit := buildinfo.Commit
+	buildinfo.ReleaseVersion = "2026.04.0"
+	buildinfo.Commit = "04fc78e"
+	t.Cleanup(func() {
+		buildinfo.ReleaseVersion = oldRelease
+		buildinfo.Commit = oldCommit
+	})
+
+	impl := newMCPImplementation()
+	if impl.Version != "2026.04.0+04fc78e" {
+		t.Fatalf("expected stamped version, got %q", impl.Version)
 	}
 }
 

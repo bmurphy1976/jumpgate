@@ -4,6 +4,7 @@ import (
 	"context"
 	"dashboard/config"
 	"dashboard/icons"
+	"dashboard/internal/buildinfo"
 	"dashboard/model"
 	"dashboard/storage"
 	"fmt"
@@ -23,10 +24,7 @@ type MCPHandler struct {
 func SetupMCPRoutes(e *echo.Echo, ds DSResolver, il *icons.Loader, tokens config.APITokens) {
 	h := &MCPHandler{ds: ds, icons: il, tokens: tokens}
 
-	mcpServer := mcp.NewServer(&mcp.Implementation{
-		Name:    "jumpgate",
-		Version: "1.0.0",
-	}, nil)
+	mcpServer := mcp.NewServer(newMCPImplementation(), nil)
 
 	h.registerTools(mcpServer)
 
@@ -56,6 +54,13 @@ func SetupMCPRoutes(e *echo.Echo, ds DSResolver, il *icons.Loader, tokens config
 		handler.ServeHTTP((*c).Response(), r)
 		return nil
 	})
+}
+
+func newMCPImplementation() *mcp.Implementation {
+	return &mcp.Implementation{
+		Name:    "jumpgate",
+		Version: buildinfo.ServiceVersion(),
+	}
 }
 
 type contextKey string

@@ -3,6 +3,7 @@ package handlers
 import (
 	"dashboard/config"
 	"dashboard/icons"
+	"dashboard/internal/buildinfo"
 	"dashboard/model"
 	"dashboard/static"
 	"encoding/json"
@@ -461,7 +462,7 @@ func (h *APIHandler) listIcons(c *echo.Context) error {
 func (h *APIHandler) apiIndex(c *echo.Context) error {
 	index := map[string]any{
 		"name":    "Jumpgate API",
-		"version": "1.0.0",
+		"version": buildinfo.ServiceVersion(),
 		"endpoints": map[string]string{
 			"categories": "/api/categories",
 			"bookmarks":  "/api/bookmarks",

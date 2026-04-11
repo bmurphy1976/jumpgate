@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"dashboard/internal/buildinfo"
 	"dashboard/model"
 	"reflect"
 	"strings"
@@ -125,12 +126,25 @@ func TestSchemaSliceOfRegisteredType(t *testing.T) {
 }
 
 func TestBuildSpecStructure(t *testing.T) {
+	oldRelease := buildinfo.ReleaseVersion
+	oldCommit := buildinfo.Commit
+	buildinfo.ReleaseVersion = "2026.04.0"
+	buildinfo.Commit = "04fc78e"
+	t.Cleanup(func() {
+		buildinfo.ReleaseVersion = oldRelease
+		buildinfo.Commit = oldCommit
+	})
+
 	h := &APIHandler{}
 	routes := dataRoutes(h)
 	spec := buildSpecFromRoutes(routes)
 
 	if spec["openapi"] != "3.0.3" {
 		t.Errorf("expected openapi 3.0.3, got %v", spec["openapi"])
+	}
+	info := spec["info"].(map[string]any)
+	if info["version"] != "2026.04.0+04fc78e" {
+		t.Errorf("expected stamped version, got %v", info["version"])
 	}
 
 	paths, ok := spec["paths"].(map[string]any)

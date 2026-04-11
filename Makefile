@@ -1,6 +1,7 @@
-.PHONY: build run debug demo test clean deps generate docker-build docker-run docker-start docker-stop docker-restart docker-demo-build docker-demo-run
+.PHONY: build run debug demo test clean deps generate version next-version release-prepare release-publish docker-build docker-run docker-start docker-stop docker-restart docker-demo-build docker-demo-run
 
 ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+STAMPED_LDFLAGS = $$(./scripts/version.sh ldflags)
 
 # Go
 
@@ -15,9 +16,10 @@ generate:
 build: deps
 	@echo "Generating templ files..."
 	@$$(go env GOPATH)/bin/templ generate
+	@echo "Version: $$(./scripts/version.sh service)"
 	@echo "Building jumpgate..."
 	@mkdir -p $(ROOT_DIR)/bin
-	@go build -o bin/jumpgate ./cmd/jumpgate
+	@go build -ldflags "$(STAMPED_LDFLAGS)" -o bin/jumpgate ./cmd/jumpgate
 	@echo "✓ Built bin/jumpgate"
 	@echo "Building jumpgate-cli..."
 	@go build -o bin/jumpgate-cli ./cmd/jumpgate-cli
@@ -44,6 +46,18 @@ demo-slow: build
 test: generate
 	@echo "Running Go tests..."
 	@go test ./...
+
+version:
+	@./scripts/version.sh service
+
+next-version:
+	@./scripts/version.sh next
+
+release-prepare:
+	@./scripts/release.sh prepare
+
+release-publish:
+	@./scripts/release.sh publish
 
 clean:
 	rm -rf bin
