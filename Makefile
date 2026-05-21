@@ -2,20 +2,20 @@
 
 ROOT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 STAMPED_LDFLAGS = $$(./scripts/version.sh ldflags)
+TEMPL = go tool github.com/a-h/templ/cmd/templ
 
 # Go
 
 deps:
-	@echo "Installing Go dependencies..."
-	@go install github.com/a-h/templ/cmd/templ@latest
+	@echo "Downloading Go dependencies..."
 	@go mod download
 
 generate:
-	@$$(go env GOPATH)/bin/templ generate
+	@$(TEMPL) generate
 
 build: deps
 	@echo "Generating templ files..."
-	@$$(go env GOPATH)/bin/templ generate
+	@$(TEMPL) generate
 	@echo "Version: $$(./scripts/version.sh service)"
 	@echo "Building jumpgate..."
 	@mkdir -p $(ROOT_DIR)/bin

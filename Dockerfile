@@ -2,14 +2,12 @@ FROM golang:1.26-alpine AS builder
 
 WORKDIR /build
 
-RUN go install github.com/a-h/templ/cmd/templ@latest
-
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 
-RUN templ generate && go build -ldflags "$(./scripts/version.sh ldflags)" -o /jumpgate ./cmd/jumpgate
+RUN go tool github.com/a-h/templ/cmd/templ generate && go build -ldflags "$(./scripts/version.sh ldflags)" -o /jumpgate ./cmd/jumpgate
 
 FROM alpine:3
 
