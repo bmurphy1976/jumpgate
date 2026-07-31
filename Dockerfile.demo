@@ -1,4 +1,4 @@
-FROM golang:1.26-alpine AS builder
+FROM golang:1.26.5-alpine3.24 AS builder
 
 WORKDIR /build
 
@@ -9,7 +9,7 @@ COPY . .
 
 RUN go tool github.com/a-h/templ/cmd/templ generate && go build -ldflags "$(./scripts/version.sh ldflags)" -o /jumpgate ./cmd/jumpgate
 
-FROM alpine:3
+FROM alpine:3.24.1
 
 RUN adduser -D -u 1000 app
 
